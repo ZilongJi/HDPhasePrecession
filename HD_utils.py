@@ -2,6 +2,7 @@ from scipy.signal import hilbert
 import numpy as np
 from mne.time_frequency import psd_array_multitaper
 from scipy.ndimage import gaussian_filter1d
+import h5py
 
 def get_phase(filtered_lfp):
     """
@@ -217,3 +218,91 @@ def get_rotation_spiketimes(poh, pot, pspt, config):
     spike_times_combined = np.concatenate((spike_times_CCW, spike_times_CW))
     
     return spike_times_combined
+
+
+#%% code for loading data
+def load_data(ratname, file_path):
+    # Load the .mat file
+    with h5py.File(file_path, 'r') as f:
+
+        # Access the sdata structure
+        sdata = f['sdata']
+
+        # Check if 'light1' exists in sdata
+        if 'light1' not in sdata:
+            print(f"'light1' not found in {file_path}")
+            return None
+
+        # Accessing the light1 group and its datasets
+        light1 = sdata['light1']
+        ppox = np.array(light1['pox'])
+        ppoy = np.array(light1['poy'])
+        pot = np.array(light1['pot'])
+        poh = np.array(light1['poh'])
+        pov = np.array(light1['pov'])
+        f0 = np.array(light1['F0'])
+        sintcptFreqy = np.array(light1['sintcptFreqy'])
+
+        # Extract all cells containing the name 'R222'
+        cell_names = [key for key in sdata.keys() if ratname in key]
+        #print(f"Cell Names: {cell_names}")
+
+        # Initialize dictionary to store data for all cells
+        cells_data = {}
+
+        # Iterate over each cell name and extract data
+        for cell_name in cell_names:
+            part_now = 'light1'  # Assuming 'light1' is the part_now equivalent
+
+            pspx = np.array(sdata[cell_name][part_now]['spx'])
+            pspy = np.array(sdata[cell_name][part_now]['spy'])
+            pspt = np.array(sdata[cell_name][part_now]['spt'])
+            pspv = np.array(sdata[cell_name][part_now]['spv'])
+            psph = np.array(sdata[cell_name][part_now]['sph'])
+            pspm = np.array(sdata[cell_name][part_now]['spm'])
+            pval = np.array(sdata[cell_name][part_now]['pval'])
+            spike_phase = np.array(sdata[cell_name][part_now]['spike_phase'])
+            autocorrelogram = np.array(sdata[cell_name][part_now]['theta_train_long2'])
+            hd_mean = np.array(sdata[cell_name][part_now]['hd_mean'])
+            hd_std = np.array(sdata[cell_name][part_now]['hd_stdev'])
+            tune_width = np.array(sdata[cell_name][part_now]['tuning_width'])
+            intrinsic_freq = np.array(sdata[cell_name][part_now]['intrinsic_theta_frequency'])
+
+            # Extract and decode cell_type
+            cell_type_array = np.array(sdata[cell_name][part_now]['thetacell_type'])
+            cell_type = ''.join([chr(ascii_val[0]) for ascii_val in cell_type_array])
+
+            # Store the data for this cell
+            cells_data[cell_name] = {
+                'pspx': pspx,
+                'pspy': pspy,
+                'pspt': pspt,
+                'pspv': pspv,
+                'psph': psph,
+                'pspm': pspm,
+                'pval': pval,
+                'spike_phase': spike_phase,
+                'autocorrelogram': autocorrelogram,
+                'hd_mean': hd_mean,
+                'hd_std': hd_std,
+                'tune_width': tune_width,
+                'intrinsic_freq': intrinsic_freq,
+                'cell_type': cell_type
+            }
+
+        # Create a dictionary to store all the data
+        data_dict = {
+            'ppox': ppox,
+            'ppoy': ppoy,
+            'pot': pot,
+            'poh': poh,
+            'pov': pov,
+            'f0': f0,
+            'sintcptFreqy': sintcptFreqy,
+            'cell_names': cell_names,
+            'cells_data': cells_data
+        }
+
+        return data_dict
+
+
