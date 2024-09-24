@@ -242,6 +242,7 @@ def load_data(ratname, file_path):
         pov = np.array(light1['pov'])
         f0 = np.array(light1['F0'])
         sintcptFreqy = np.array(light1['sintcptFreqy'])
+        global_freq = np.array(light1['maxFreq_type1'])
 
         # Extract all cells containing the name 'R222'
         cell_names = [key for key in sdata.keys() if ratname in key]
@@ -267,6 +268,10 @@ def load_data(ratname, file_path):
             hd_std = np.array(sdata[cell_name][part_now]['hd_stdev'])
             tune_width = np.array(sdata[cell_name][part_now]['tuning_width'])
             intrinsic_freq = np.array(sdata[cell_name][part_now]['intrinsic_theta_frequency'])
+            hd_rayleigh = np.array(sdata[cell_name][part_now]['hd_rayleigh'])
+            hd_rayleigh_shuffle_95 = np.array(sdata[cell_name][part_now]['HDrayleigh_shuff_val'])
+            hd_rayleigh_shuffle_99 = np.array(sdata[cell_name][part_now]['HDrayleigh_shuff_val2'])
+            peak_firingrate = np.array(sdata[cell_name][part_now]['hd_max_frate'])
 
             # Extract and decode cell_type
             cell_type_array = np.array(sdata[cell_name][part_now]['thetacell_type'])
@@ -287,7 +292,11 @@ def load_data(ratname, file_path):
                 'hd_std': hd_std,
                 'tune_width': tune_width,
                 'intrinsic_freq': intrinsic_freq,
-                'cell_type': cell_type
+                'cell_type': cell_type,
+                'hd_rayleigh': hd_rayleigh,
+                'hd_rayleigh_shuffle_95': hd_rayleigh_shuffle_95,
+                'hd_rayleigh_shuffle_99': hd_rayleigh_shuffle_99,
+                'peak_fr': peak_firingrate
             }
 
         # Create a dictionary to store all the data
@@ -299,6 +308,7 @@ def load_data(ratname, file_path):
             'pov': pov,
             'f0': f0,
             'sintcptFreqy': sintcptFreqy,
+            'global_freq': global_freq,
             'cell_names': cell_names,
             'cells_data': cells_data
         }
