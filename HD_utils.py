@@ -274,6 +274,7 @@ def load_data(ratname, file_path):
             peak_firingrate = np.array(sdata[cell_name][part_now]['hd_max_frate'])
 
             # Extract and decode cell_type
+            cell_type_num = np.array(sdata[cell_name][part_now]['cell_type_num'])
             cell_type_array = np.array(sdata[cell_name][part_now]['thetacell_type'])
             cell_type = ''.join([chr(ascii_val[0]) for ascii_val in cell_type_array])
 
@@ -293,6 +294,7 @@ def load_data(ratname, file_path):
                 'tune_width': tune_width,
                 'intrinsic_freq': intrinsic_freq,
                 'cell_type': cell_type,
+                'cell_type_num': cell_type_num,
                 'hd_rayleigh': hd_rayleigh,
                 'hd_rayleigh_shuffle_95': hd_rayleigh_shuffle_95,
                 'hd_rayleigh_shuffle_99': hd_rayleigh_shuffle_99,
