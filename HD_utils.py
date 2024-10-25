@@ -154,6 +154,39 @@ def calculate_angular_speed(poh, pot, sigma=5):
 
     return angular_speed
 
+def find_continuous_periods_between_low_high(angular_speed, pot, speed_low, speed_high, duration_threshold=1.0):
+    if speed_low > 0:
+        # Identify where angular speed bwteen low and high
+        above_threshold = (angular_speed > speed_low) & (angular_speed < speed_high)
+    elif speed_low < 0:
+        # Identify where angular speed is below the threshold
+        above_threshold = (angular_speed < speed_low) & (angular_speed > speed_high)
+    else:
+        raise ValueError("Speed threshold must be non-zero")
+
+    # Find the indices where the state changes
+    change_indices = np.diff(above_threshold.astype(int), prepend=0, append=0)
+
+    # Identify the start and end indices of the segments
+    start_indices = np.where(change_indices == 1)[0]
+    end_indices = np.where(change_indices == -1)[0]
+
+    # Ensure there is a matching number of start and end indices
+    if len(start_indices) > len(end_indices):
+        end_indices = np.append(end_indices, len(angular_speed) - 1)
+    elif len(end_indices) > len(start_indices):
+        start_indices = np.insert(start_indices, 0, 0)
+
+    continuous_periods = []
+    for start, end in zip(start_indices, end_indices):
+        if end >= len(pot):
+            end = len(pot) - 1
+        duration = pot[end] - pot[start]
+        if duration >= duration_threshold:
+            continuous_periods.append((pot[start], pot[end]))
+
+    return continuous_periods
+
 def find_continuous_periods(angular_speed, pot, speed_threshold=0.5, duration_threshold=1.0):
     if speed_threshold > 0:
         # Identify where angular speed exceeds the threshold
