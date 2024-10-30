@@ -305,6 +305,8 @@ def load_data(ratname, file_path):
             hd_rayleigh_shuffle_95 = np.array(sdata[cell_name][part_now]['HDrayleigh_shuff_val'])
             hd_rayleigh_shuffle_99 = np.array(sdata[cell_name][part_now]['HDrayleigh_shuff_val2'])
             peak_firingrate = np.array(sdata[cell_name][part_now]['hd_max_frate'])
+            ATI_widthshift = np.array(sdata[cell_name][part_now]['RLdata']['optimal_width_shift'])
+            ATI_cwccw = np.array(sdata[cell_name][part_now]['RLdata']['ATI'])
 
             # Extract and decode cell_type
             cell_type_num = np.array(sdata[cell_name][part_now]['cell_type_num'])
@@ -331,7 +333,9 @@ def load_data(ratname, file_path):
                 'hd_rayleigh': hd_rayleigh,
                 'hd_rayleigh_shuffle_95': hd_rayleigh_shuffle_95,
                 'hd_rayleigh_shuffle_99': hd_rayleigh_shuffle_99,
-                'peak_fr': peak_firingrate
+                'peak_fr': peak_firingrate,
+                'ATI_widthshift': ATI_widthshift,
+                'ATI_cwccw': ATI_cwccw
             }
 
         # Create a dictionary to store all the data
