@@ -254,20 +254,20 @@ def get_rotation_spiketimes(poh, pot, pspt, config):
 
 
 #%% code for loading data
-def load_data(ratname, file_path):
+def load_data(ratname, file_path, trialname='light1'):
     # Load the .mat file
     with h5py.File(file_path, 'r') as f:
 
         # Access the sdata structure
         sdata = f['sdata']
 
-        # Check if 'light1' exists in sdata
-        if 'light1' not in sdata:
-            print(f"'light1' not found in {file_path}")
+        # Check if trialname exists in sdata
+        if trialname not in sdata:
+            print(f"{trialname} not found in {file_path}")
             return None
 
         # Accessing the light1 group and its datasets
-        light1 = sdata['light1']
+        light1 = sdata[trialname]
         ppox = np.array(light1['pox'])
         ppoy = np.array(light1['poy'])
         pot = np.array(light1['pot'])
@@ -286,7 +286,7 @@ def load_data(ratname, file_path):
 
         # Iterate over each cell name and extract data
         for cell_name in cell_names:
-            part_now = 'light1'  # Assuming 'light1' is the part_now equivalent
+            part_now = trialname  # Assuming trialname is the part_now equivalent
 
             pspx = np.array(sdata[cell_name][part_now]['spx'])
             pspy = np.array(sdata[cell_name][part_now]['spy'])
